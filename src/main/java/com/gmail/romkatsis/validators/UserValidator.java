@@ -8,7 +8,7 @@ import org.springframework.validation.Validator;
 import java.time.LocalDate;
 
 @Component
-public class userValidator implements Validator {
+public class UserValidator implements Validator {
     @Override
     public boolean supports(Class<?> clazz) {
         return User.class.equals(clazz);
