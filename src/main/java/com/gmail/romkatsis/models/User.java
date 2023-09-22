@@ -4,10 +4,9 @@ import jakarta.validation.constraints.*;
 
 public class User {
     private int id;
-    @NotNull(message = "Please, enter your full name")
+    @NotEmpty(message = "Please, enter your full name")
     @Size(max = 60, message = "Sorry, your name is too big :)")
     private String fullName;
-    @NotEmpty(message = "Fuck")
     private int birthYear;
 
     public User() {}
