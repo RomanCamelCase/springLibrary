@@ -1,16 +1,16 @@
 package com.gmail.romkatsis.models;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 public class Book {
     private int id;
 
     @NotEmpty(message = "Name can not be empty")
-    @Max(value = 50, message = "Too big name")
+    @Size(max = 50, message = "Too big name")
     private String name;
     @NotEmpty(message = "Author name can not be empty")
-    @Max(value = 60, message = "Too big author's name")
+    @Size(max = 60, message = "Too big author's name")
     private String author;
     private int userId;
 

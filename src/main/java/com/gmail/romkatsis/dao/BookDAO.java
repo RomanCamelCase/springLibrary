@@ -1,8 +1,8 @@
 package com.gmail.romkatsis.dao;
 
+import com.gmail.romkatsis.mappers.BookMapper;
 import com.gmail.romkatsis.models.Book;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -19,12 +19,12 @@ public class BookDAO {
     }
 
     public List<Book> getBooks() {
-        return jdbcTemplate.query("SELECT * FROM books;", new BeanPropertyRowMapper<>(Book.class));
+        return jdbcTemplate.query("SELECT * FROM books;", new BookMapper());
     }
 
     public Optional<Book> getBook(int id) {
         return jdbcTemplate.query("SELECT * FROM books WHERE id = ?;", new Object[]{id},
-                new BeanPropertyRowMapper<>(Book.class)).stream().findAny();
+                new BookMapper()).stream().findAny();
     }
 
     public void addBook(Book book) {
