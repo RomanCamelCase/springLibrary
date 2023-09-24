@@ -13,7 +13,15 @@
         <h1 class="display-2" th:text="${user.getFullName()}"></h1>
         <h1 class="display-6" th:text="${user.getBirthYear()}"></h1>
         <br/>
+        <div th:if="${books.isEmpty()}">
+            <h1 class="display-6">User don't have books</h1>
+        </div>
+        <div th:unless="${books.isEmpty()}">
+            <h1 class="display-6" th:each="book : ${books}" th:text="|${book.getName()}, ${book.getAuthor()}|"></h1>
+        </div>
+        <br/>
         <a class="btn btn-primary" role="button" th:href="@{/users/{id}/edit(id=${user.getId()})}">Update</a>
+        <br/>
         <form th:method="DELETE" th:action="@{/users/{id}(id=${user.getId()})}">
             <input type="submit" value="Delete" class="btn btn-danger">
         </form>

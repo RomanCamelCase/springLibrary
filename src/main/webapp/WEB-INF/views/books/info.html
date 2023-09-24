@@ -13,7 +13,25 @@
         <h1 class="display-2" th:text="${book.getName()}"></h1>
         <h1 class="display-6" th:text="${book.getAuthor()}"></h1>
         <br/>
+        <div th:if="${currentUser}">
+            <h1 class="display-6" th:text="|Owner ${currentUser.get().getFullName()}|"></h1>
+            <form th:method="PATCH" th:action="@{/books/{id}/free(id=${book.getId()})}">
+                <input type="submit" value="Free the book" class="btn btn-info">
+            </form>
+        </div>
+        <div th:unless="${currentUser}">
+            <h1 class="display-6" th:text="|Choose new owner:|"></h1>
+            <form th:method="PATCH" th:action="@{/books/{id}/user(id=${book.getId()})}">
+                <label for="user"></label>
+                <select class="form-select w-20" th:object="${user}" th:field="*{id}" id="user">
+                    <option th:each="user : ${users}" th:value="${user.getId()}" th:text="${user.getFullName()}"></option>
+                </select>
+                <input type="submit" value="Set new user" class="btn btn-info">
+            </form>
+        </div>
+        <br/>
         <a class="btn btn-primary" role="button" th:href="@{/books/{id}/edit(id=${book.getId()})}">Update</a>
+        <br/>
         <form th:method="DELETE" th:action="@{/books/{id}(id=${book.getId()})}">
             <input type="submit" value="Delete" class="btn btn-danger">
         </form>

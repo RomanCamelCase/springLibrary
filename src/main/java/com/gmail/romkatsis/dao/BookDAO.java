@@ -22,6 +22,19 @@ public class BookDAO {
         return jdbcTemplate.query("SELECT * FROM books;", new BookMapper());
     }
 
+    public List<Book> getBooksByUser(int userId) {
+        return jdbcTemplate.query("SELECT * FROM books WHERE user_id = ?;", new Object[]{userId},
+                new BookMapper());
+    }
+
+    public void setUserForBook(int userId, int bookId) {
+        jdbcTemplate.update("UPDATE books SET user_id = ? WHERE id = ?", userId, bookId);
+    }
+
+    public void deleteUserForBook(int bookId) {
+        jdbcTemplate.update("UPDATE books SET user_id = null WHERE id = ?", bookId);
+    }
+
     public Optional<Book> getBook(int id) {
         return jdbcTemplate.query("SELECT * FROM books WHERE id = ?;", new Object[]{id},
                 new BookMapper()).stream().findAny();

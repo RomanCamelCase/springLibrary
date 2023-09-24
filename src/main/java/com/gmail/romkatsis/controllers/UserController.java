@@ -1,5 +1,6 @@
 package com.gmail.romkatsis.controllers;
 
+import com.gmail.romkatsis.dao.BookDAO;
 import com.gmail.romkatsis.dao.UserDAO;
 import com.gmail.romkatsis.models.User;
 import com.gmail.romkatsis.validators.UserValidator;
@@ -10,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -17,11 +19,13 @@ import java.util.Optional;
 public class UserController {
     private final UserValidator userValidator;
     private final UserDAO userDAO;
+    private final BookDAO bookDAO;
 
     @Autowired
-    public UserController(UserValidator userValidator, UserDAO userDAO) {
+    public UserController(UserValidator userValidator, UserDAO userDAO, BookDAO bookDAO) {
         this.userValidator = userValidator;
         this.userDAO = userDAO;
+        this.bookDAO = bookDAO;
     }
 
     @GetMapping()
@@ -36,6 +40,8 @@ public class UserController {
         if (user.isEmpty()) {
             return "redirect:/users";
         }
+
+        model.addAttribute("books", bookDAO.getBooksByUser(id));
         model.addAttribute("user", user.get());
         return "users/profile";
     }
