@@ -66,7 +66,7 @@ public class BookController {
     }
 
     @PatchMapping("/{id}/free")
-    public String seleteUserForBook(@PathVariable int id) {
+    public String selectUserForBook(@PathVariable int id) {
         bookDAO.deleteUserForBook(id);
         return "redirect:/books/%d".formatted(id);
     }
