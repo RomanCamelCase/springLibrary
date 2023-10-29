@@ -1,26 +1,37 @@
 package com.gmail.romkatsis.models;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+@Entity
+@Table(name = "books")
 public class Book {
+    @Column(name = "id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "name")
     @NotEmpty(message = "Name can not be empty")
     @Size(max = 50, message = "Too big name")
     private String name;
+
+    @Column(name = "author")
     @NotEmpty(message = "Author name can not be empty")
     @Size(max = 60, message = "Too big author's name")
     private String author;
-    private int userId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User owner;
 
     public Book() {
     }
 
-    public Book(String name, String author, int userId) {
+    public Book(String name, String author) {
         this.name = name;
         this.author = author;
-        this.userId = userId;
     }
 
     public int getId() {
@@ -47,11 +58,11 @@ public class Book {
         this.author = author;
     }
 
-    public int getUserId() {
-        return userId;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }

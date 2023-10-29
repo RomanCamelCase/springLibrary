@@ -1,8 +1,7 @@
 package com.gmail.romkatsis.controllers;
-
-import com.gmail.romkatsis.dao.BookDAO;
-import com.gmail.romkatsis.dao.UserDAO;
 import com.gmail.romkatsis.models.User;
+import com.gmail.romkatsis.services.BookService;
+import com.gmail.romkatsis.services.UserService;
 import com.gmail.romkatsis.validators.UserValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,30 +16,30 @@ import java.util.Optional;
 @RequestMapping("/users")
 public class UserController {
     private final UserValidator userValidator;
-    private final UserDAO userDAO;
-    private final BookDAO bookDAO;
+    private final UserService userService;
+    private final BookService bookService;
 
     @Autowired
-    public UserController(UserValidator userValidator, UserDAO userDAO, BookDAO bookDAO) {
+    public UserController(UserValidator userValidator, UserService userService, BookService bookService) {
         this.userValidator = userValidator;
-        this.userDAO = userDAO;
-        this.bookDAO = bookDAO;
+        this.userService = userService;
+        this.bookService = bookService;
     }
 
     @GetMapping()
     public String getUsers(Model model) {
-        model.addAttribute("users", userDAO.getUsers());
+        model.addAttribute("users", userService.findAll());
         return "users/index";
     }
 
     @GetMapping("/{id}")
     public String getUser(@PathVariable int id, Model model) {
-        Optional<User> user = userDAO.getUser(id);
+        Optional<User> user = userService.findById(id);
         if (user.isEmpty()) {
             return "redirect:/users";
         }
 
-        model.addAttribute("books", bookDAO.getBooksByUser(id));
+        model.addAttribute("books", bookService.findByOwner(user.get()));
         model.addAttribute("user", user.get());
         return "users/profile";
     }
@@ -57,16 +56,17 @@ public class UserController {
             return "users/register";
         }
 
-        userDAO.addUser(user);
+        userService.add(user);
         return "redirect:/users";
     }
 
     @GetMapping("/{id}/edit")
     public String editUser(Model model, @PathVariable int id) {
-        Optional<User> user = userDAO.getUser(id);
+        Optional<User> user = userService.findById(id);
         if (user.isEmpty()) {
             return "redirect:/users";
         }
+
         model.addAttribute("user", user.get());
         return "users/edit";
     }
@@ -77,13 +77,14 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "users/edit";
         }
-        userDAO.updateUser(user, id);
+
+        userService.update(user, id);
         return "redirect:/users/%d".formatted(id);
     }
 
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable int id) {
-        userDAO.deleteUser(id);
+        userService.delete(id);
         return "redirect:/users";
     }
 }

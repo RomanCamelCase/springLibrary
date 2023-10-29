@@ -1,21 +1,23 @@
 package com.gmail.romkatsis.validators;
 
-import com.gmail.romkatsis.dao.UserDAO;
 import com.gmail.romkatsis.models.User;
+import com.gmail.romkatsis.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class UserValidator implements Validator {
-    private final UserDAO userDAO;
+    private final UserService userService;
 
     @Autowired
-    public UserValidator(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public UserValidator(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -27,7 +29,9 @@ public class UserValidator implements Validator {
     public void validate(Object target, Errors errors) {
         User user = (User) target;
 
-        if (userDAO.getUser(user.getFullName()).isPresent()) {
+        List<User> users = userService.findByName(user.getFullName());
+
+        if (!users.isEmpty() && users.get(0).getId() != user.getId()) {
             errors.rejectValue("fullName", "", "We already have a user with this full name");
         }
 

@@ -14,7 +14,7 @@
         <h1 class="display-6" th:text="${book.getAuthor()}"></h1>
         <br/>
         <div th:if="${currentUser}">
-            <h1 class="display-6" th:text="|Owner ${currentUser.get().getFullName()}|"></h1>
+            <h1 class="display-6" th:text="|Owner ${currentUser.getFullName()}|"></h1>
             <form th:method="PATCH" th:action="@{/books/{id}/free(id=${book.getId()})}">
                 <input type="submit" value="Free the book" class="btn btn-info">
             </form>

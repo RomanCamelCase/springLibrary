@@ -20,7 +20,8 @@
                 <input type="text" class="form-control" id="author" aria-describedby="authorHelp" th:field="*{author}">
                 <div id="authorHelper" class="form-text" th:if="${#fields.hasErrors('author')}" th:errors="*{author}"></div>
             </div>
-            <input class="btn btn-primary" type="submit" value="Add new book"/>
+            <input type="hidden" th:if="*{owner}" th:field="*{owner.id}">
+            <input class="btn btn-primary" type="submit" value="Update book"/>
         </div>
     </form>
 </body>

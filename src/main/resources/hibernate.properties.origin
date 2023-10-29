@@ -1,0 +1,2 @@
+hibernate.dialect=
+hibernate.show_sql=

@@ -1,9 +1,9 @@
 package com.gmail.romkatsis.controllers;
 
-import com.gmail.romkatsis.dao.BookDAO;
-import com.gmail.romkatsis.dao.UserDAO;
 import com.gmail.romkatsis.models.Book;
 import com.gmail.romkatsis.models.User;
+import com.gmail.romkatsis.services.BookService;
+import com.gmail.romkatsis.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,40 +12,42 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/books")
 public class BookController {
-    private final BookDAO bookDAO;
-    private final UserDAO userDAO;
+    private final BookService bookService;
+    private final UserService userService;
 
     @Autowired
-    public BookController(BookDAO bookDAO, UserDAO userDAO) {
-        this.bookDAO = bookDAO;
-        this.userDAO = userDAO;
+    public BookController(BookService bookService, UserService userService) {
+        this.bookService = bookService;
+        this.userService = userService;
     }
 
     @GetMapping()
     public String getBooks(Model model) {
-        List<Book> books = bookDAO.getBooks();
+        List<Book> books = bookService.findAll();
         model.addAttribute("books",books);
         return "books/index";
     }
 
     @GetMapping("/{id}")
     public String getBook(@PathVariable int id, Model model, @ModelAttribute("user") User user) {
-        Optional<Book> bk = bookDAO.getBook(id);
+        Optional<Book> bk = bookService.findById(id);
         if (bk.isEmpty()) {
             return "redirect:/books";
         }
         Book book = bk.get();
         model.addAttribute("book", book);
 
-        if (book.getUserId() != 0) {
-            model.addAttribute("currentUser", userDAO.getUser(book.getUserId()));
+        User currentUser = book.getOwner();
+        if (Objects.nonNull(currentUser)) {
+            model.addAttribute("currentUser", currentUser);
         } else {
-            model.addAttribute("users", userDAO.getUsers());
+            model.addAttribute("users", userService.findAll());
         }
         return "books/info";
     }
@@ -61,28 +63,29 @@ public class BookController {
             return "books/new";
         }
 
-        bookDAO.addBook(book);
+        bookService.add(book);
         return "redirect:/books";
     }
 
     @PatchMapping("/{id}/free")
     public String selectUserForBook(@PathVariable int id) {
-        bookDAO.deleteUserForBook(id);
+        bookService.freeBook(id);
         return "redirect:/books/%d".formatted(id);
     }
 
     @PatchMapping("/{id}/user")
     public String setUserForBook(@PathVariable int id, @ModelAttribute User user) {
-        bookDAO.setUserForBook(user.getId(), id);
+        bookService.setUserForBook(user.getId(), id);
         return "redirect:/books/%d".formatted(id);
     }
 
     @GetMapping("/{id}/edit")
     public String editBook(Model model, @PathVariable int id) {
-        Optional<Book> book = bookDAO.getBook(id);
+        Optional<Book> book = bookService.findById(id);
         if (book.isEmpty()) {
             return "redirect:/books";
         }
+
         model.addAttribute("book", book.get());
         return "books/edit";
     }
@@ -92,13 +95,13 @@ public class BookController {
         if (bindingResult.hasErrors()) {
             return "books/edit";
         }
-        bookDAO.updateBook(book, id);
+        bookService.update(book, id);
         return "redirect:/books/%d".formatted(id);
     }
 
     @DeleteMapping("/{id}")
     public String deleteBook(@PathVariable int id) {
-        bookDAO.deleteBook(id);
+        bookService.delete(id);
         return "redirect:/books";
     }
 }
